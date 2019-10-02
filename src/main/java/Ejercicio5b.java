@@ -34,16 +34,7 @@ public class Ejercicio5b {
                     do {
                         guardarInfoAlumno(posicion, randomAccessFile.getFilePointer());
                         System.out.println("Desea anyadir otro alumno? s/n");
-                        caracter = lector.nextLine().charAtSystem.out.println("Dime la convocatoria ordinaria");
-                        String convocatoriaOrdinaria= lector.nextLine();
-                        randomAccessFile.seek(puntero+44);
-                        for(int i=0;i<8;i++){
-                            try{
-                                randomAccessFile.writeChar(convocatoriaOrdinaria.charAt(i));
-                            }catch (IndexOutOfBoundsException ioob){
-                                randomAccessFile.writeChar(' ');
-                            }
-                        }(0);
+                        caracter = lector.nextLine().charAt(0);
                         posicion++;
                     } while (caracter != 'n');
 
@@ -236,10 +227,27 @@ public class Ejercicio5b {
         }
     }
 
-    private static void borrarRegistro(){
+    private static void borrarRegistro() throws IOException{
         System.out.println("Dime el registro");
         int registro= lector.nextInt();
         lector.nextLine();
-        File aux= new File("aux.txt")
+        File aux= new File("aux.txt");
+        RandomAccessFile racAux=new RandomAccessFile(aux,"rw");
+        randomAccessFile.seek(0);
+        int contador=1;
+        while (randomAccessFile.getFilePointer()< randomAccessFile.length()){
+
+            if(randomAccessFile.getFilePointer()==(registro*TAMANYO_REGISTRO)){
+                randomAccessFile.seek(randomAccessFile.getFilePointer()+TAMANYO_REGISTRO);
+            }else{
+                randomAccessFile.readInt();
+                racAux.writeInt();
+                racAux.writeLong(randomAccessFile.readLong());
+                for(int i=0;i<52;i++){
+                    racAux.writeChar(randomAccessFile.readChar());
+                }
+                racAux.writeDouble(randomAccessFile.readDouble());
+            }
+        }
     }
 }
