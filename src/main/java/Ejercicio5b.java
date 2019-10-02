@@ -22,7 +22,7 @@ public class Ejercicio5b {
         if (file.exists()){
             file.delete();
         }
-        int posicion=1;
+            int posicion = 1;
         int menu;
         do {
             menu();
@@ -32,7 +32,8 @@ public class Ejercicio5b {
                 case 1:
                     char caracter = 's';
                     do {
-                        guardarInfoAlumno(posicion, randomAccessFile.getFilePointer());
+                        posicion= Integer.parseInt(""+randomAccessFile.length()/TAMANYO_REGISTRO);
+                        guardarInfoAlumno(posicion+1, randomAccessFile.getFilePointer());
                         System.out.println("Desea anyadir otro alumno? s/n");
                         caracter = lector.nextLine().charAt(0);
                         posicion++;
@@ -53,6 +54,7 @@ public class Ejercicio5b {
                     listarAlumnos();
                     break;
                 case 5:
+                    borrarRegistro();
                     break;
                 case 0:
                     System.out.println("Hastaluego");
@@ -78,7 +80,6 @@ public class Ejercicio5b {
 
     private static boolean guardarInfoAlumno(int pos,long registro){
         int posicion= pos;
-        lector.nextLine();
         System.out.println("Dime el expediente");
         long expediente= lector.nextLong();
         lector.nextLine();
@@ -232,22 +233,44 @@ public class Ejercicio5b {
         int registro= lector.nextInt();
         lector.nextLine();
         File aux= new File("aux.txt");
+        if (aux.exists()){
+            aux.delete();
+        }
         RandomAccessFile racAux=new RandomAccessFile(aux,"rw");
         randomAccessFile.seek(0);
         int contador=1;
         while (randomAccessFile.getFilePointer()< randomAccessFile.length()){
 
-            if(randomAccessFile.getFilePointer()==(registro*TAMANYO_REGISTRO)){
+            if(randomAccessFile.getFilePointer()==((registro-1)*TAMANYO_REGISTRO)){
                 randomAccessFile.seek(randomAccessFile.getFilePointer()+TAMANYO_REGISTRO);
             }else{
                 randomAccessFile.readInt();
-                racAux.writeInt();
+                racAux.writeInt(contador);
+                contador++;
                 racAux.writeLong(randomAccessFile.readLong());
-                for(int i=0;i<52;i++){
+                for(int i=0;i<36;i++){
                     racAux.writeChar(randomAccessFile.readChar());
                 }
                 racAux.writeDouble(randomAccessFile.readDouble());
             }
+        }
+        randomAccessFile.close();
+        System.out.println(file.delete());
+        randomAccessFile=new RandomAccessFile(file,"rw");
+        try {
+            InputStream in = new FileInputStream(aux);
+            OutputStream out = new FileOutputStream(file);
+            byte[] buf = new byte[1024];
+            int len;
+            while ((len = in.read(buf)) > 0) {
+                out.write(buf, 0, len);
+            }
+            in.close();
+            out.close();
+
+        } catch (IOException ioe) {
+            ioe.printStackTrace();
+
         }
     }
 }
